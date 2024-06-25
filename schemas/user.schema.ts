@@ -4,9 +4,10 @@ import { Department } from './department.schema';
 
 export type UserDocument = HydratedDocument<User>;
 
-enum ROLE {
+export enum ROLE {
   ADMIN = 'admin',
   USER = 'user',
+  MANAGER = 'manager',
   SUPPORT = 'support',
   SUPER_ADMIN = 'super_admin',
 }
@@ -14,15 +15,15 @@ enum ROLE {
 @Schema()
 export class User {
   @Prop({ required: true })
-  Name: string;
+  name: string;
   @Prop({ required: true })
-  Email: string;
+  email: string;
   @Prop({ required: true })
-  Password: string;
+  password: string;
   @Prop({ type: String, enum: ROLE, default: ROLE.USER })
-  Role: ROLE;
-  @Prop({ type: Types.ObjectId, ref: 'Department' })
-  Department: Department[];
+  role: ROLE;
+  @Prop({ type: Types.ObjectId, ref: 'Department', default: [] })
+  department: Department[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
