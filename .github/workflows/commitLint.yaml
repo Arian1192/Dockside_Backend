@@ -23,13 +23,6 @@ jobs:
           npm install -g commitlint
           npm install -g conventional-changelog-conventionalcommits
       
-      - name: Print versions
-        run: |
-          git --version
-          node --version
-          npm --version
-          commitlint --version
-      
       - name: Validate commits with commitlint
         if: github.event_name == 'push' || github.event_name == 'pull_request'
         run: |
