@@ -23,7 +23,7 @@ jobs:
       
       - name: Print versions
         run: |
-          git --version
+          NODE_OPTIONS='' git --version
           node --version
           npm --version
           commitlint --version
