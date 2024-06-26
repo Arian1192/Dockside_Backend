@@ -8,7 +8,7 @@ jobs:
   commitlint:
     runs-on: ubuntu-22.04
     container:
-      image: node:16  # Cambia a Node.js versión 16
+      image: node:18  # Cambia a Node.js versión 16
       options: --user root  # Permite al contenedor ejecutarse como root si es necesario
     steps:
       - name: Checkout code
