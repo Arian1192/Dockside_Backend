@@ -8,7 +8,7 @@ jobs:
   commitlint:
     runs-on: ubuntu-22.04
     container:
-      image: node:14
+      image: node:16  # Cambia a Node.js versión 16
       options: --user root  # Permite al contenedor ejecutarse como root si es necesario
     steps:
       - name: Checkout code
@@ -16,11 +16,9 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Install commitlint and dependencies
-        run: |
-          npm install -g commitlint
-          npm install -g conventional-changelog-conventionalcommits
-      
+      - name: Install dependencies
+        run: npm install  # Instala las dependencias del proyecto
+
       - name: Print versions
         run: |
           NODE_OPTIONS='' git --version
