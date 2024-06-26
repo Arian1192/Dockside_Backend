@@ -8,27 +8,31 @@ jobs:
   commitlint:
     runs-on: ubuntu-22.04
     container:
-      image: node:18  # Cambia a Node.js versión 16
-      options: --user root  # Permite al contenedor ejecutarse como root si es necesario
+      image: node:20 # Cambia a Node.js versión 16
+      options: --user root # Permite al contenedor ejecutarse como root si es necesario
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      
+          
+      - name: Configure Git safe.directory
+        run: |
+          git config --global --add safe.directory /__w/SupportTrack/SupportTrack
+
       - name: Install dependencies
         run: |
           npm install
           npm install -g commitlint
           npm install -g conventional-changelog-conventionalcommits
-          
+
       - name: Print versions
         run: |
           NODE_OPTIONS='' git --version
           node --version
           npm --version
           commitlint --version
-      
+
       - name: Validate current commit (last commit) with commitlint
         if: github.event_name == 'push'
         run: npx commitlint --last --verbose
