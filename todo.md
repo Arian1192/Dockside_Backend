@@ -1,5 +1,3 @@
-
-
 TDD: Test Driven Development
 
 // DELETE /users/:id
@@ -13,7 +11,6 @@ TDD: Test Driven Development
 //TODO: Crear la función para actualizar usuarios, Fallará
 //TODO: Hacer que el test pase
 //TODO: Refactorizar
-
 
 // DEPARTAMENTOS
 // GET /departamentos
@@ -34,13 +31,11 @@ TDD: Test Driven Development
 //TODO: Hacer que el test pase
 //TODO: Refactorizar
 
-
 // PATCH /departamentos/:id
 //TODO: Crear un test para actualizar un departamento, Fallará
 //TODO: Crear la función para actualizar un departamento, Fallará
 //TODO: Hacer que el test pase
 //TODO: Refactorizar
-
 
 // DELETE /departamentos/:id
 //TODO: Crear un test para eliminar un departamento, Fallará

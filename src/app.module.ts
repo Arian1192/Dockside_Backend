@@ -1,22 +1,19 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Schemas } from '../schemas/index';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-
-const MONGO_URI = process.env.MONGO_URI;
-console.log(MONGO_URI);
-
+import { DatabaseModule } from './database/database.module';
+import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
-    MongooseModule.forRoot(
-      'mongodb+srv://ariancollasorodriguez:831M7S65ckzcrDXc@cluster0.20nkdml.mongodb.net/test?retryWrites=true&w=majority',
-    ),
-    MongooseModule.forFeature(Schemas),
+    ConfigModule.forRoot({
+      envFilePath: '.development.env',
+      isGlobal: true,
+    }),
     AuthModule,
     UsersModule,
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
