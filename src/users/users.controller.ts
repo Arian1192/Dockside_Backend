@@ -1,5 +1,5 @@
 import { Controller, Get, Req, Res } from '@nestjs/common';
-import { User } from 'schemas/user.schema';
+import { User } from 'src/schemas/user.schema';
 import { UsersService } from './users.service';
 import { Request, Response } from 'express';
 

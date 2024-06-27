@@ -2,7 +2,7 @@ import { Body, Controller, Post, HttpCode, UsePipes } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './sign-in.dto';
 import { SignUpDto } from './sign-up.dto';
-import { BcryptPipe } from 'src/users/pipes/bcrypt.pipe';
+import { BcryptPipe } from '../users/pipes/bcrypt.pipe';
 
 @Controller('auth')
 export class AuthController {
