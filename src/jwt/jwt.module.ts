@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
+import { jwtConstants } from 'src/auth/constants';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from '../auth/constants';
+
 @Module({
   imports: [
     JwtModule.register({
@@ -9,7 +10,5 @@ import { jwtConstants } from '../auth/constants';
       signOptions: { expiresIn: '60s' },
     }),
   ],
-  controllers: [],
-  providers: [],
 })
 export class JsonWebTokenModule {}
