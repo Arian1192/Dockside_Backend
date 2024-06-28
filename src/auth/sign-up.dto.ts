@@ -5,7 +5,7 @@ import {
   IsNotEmpty,
   IsEnum,
 } from 'class-validator';
-import { ROLE } from 'schemas/user.schema';
+import { ROLE } from '../schemas/user.schema';
 
 export class SignUpDto {
   @IsEmail()
