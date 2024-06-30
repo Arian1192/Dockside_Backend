@@ -43,6 +43,7 @@ export class AuthController {
         _signUpDto.email,
         _signUpDto.password,
         _signUpDto.role,
+        _signUpDto.department,
       );
     }
   }

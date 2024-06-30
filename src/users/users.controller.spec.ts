@@ -2,30 +2,37 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { Connection, connect, Model } from 'mongoose';
+import { Connection, connect, Model, Types } from 'mongoose';
 import { User, UserSchema } from '../schemas/user.schema';
+import { Department, DepartmentSchema } from '../schemas/department.schema'; // Importar el esquema de Department
 import { getModelToken } from '@nestjs/mongoose';
 import { AuthController } from '../auth/auth.controller';
 import { AuthService } from '../auth/auth.service';
 import { JsonWebTokenModule } from '../jwt/jwt.module';
 import { SignUpDto } from 'src/auth/sign-up.dto';
-import { Department } from 'src/schemas/department.schema';
+import { DepartmentsDto } from '../departments/departments-dto/departments-dto';
+import { DepartmentsService } from '../departments/departments.service';
+import { DepartmentsController } from '../departments/departments.controller';
+import { Response } from 'express';
 
 describe('UsersController', () => {
   let authController: AuthController;
   let userController: UsersController;
-  let departmentController: DepartmentController; // 👈 add this line
   let mongod: MongoMemoryServer;
   let mongoConnection: Connection;
   let userModel: Model<User>;
   let mockUser: SignUpDto;
-  let mockDepartment: DepartmentDto; // 👈 add this line and create a DepartmentDto
+  let mockDepartment: DepartmentsDto;
+  let department: DepartmentsDto;
+  let mockDeparmentService: Partial<DepartmentsService>;
+  let departmentsController: DepartmentsController;
 
   beforeAll(async () => {
     mongod = await MongoMemoryServer.create();
     const uri = mongod.getUri();
     mongoConnection = (await connect(uri)).connection;
     userModel = mongoConnection.model('User', UserSchema);
+    mongoConnection.model('Department', DepartmentSchema); // Registrar el modelo de Department
   });
 
   afterAll(async () => {
@@ -42,35 +49,54 @@ describe('UsersController', () => {
     };
 
     mockDepartment = {
+      _id: new Types.ObjectId(),
       name: 'IT',
       description: 'Information Technology',
+    };
+
+    mockDeparmentService = {
+      create: jest.fn().mockResolvedValue(mockDepartment),
     };
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [JsonWebTokenModule],
       providers: [
         UsersService,
-        DepartmentService, // 👈 add this line
         AuthService,
         { provide: getModelToken('User'), useValue: userModel },
+        { provide: getModelToken('Department'), useValue: {} }, // Proveer el modelo de Department
+        { provide: DepartmentsService, useValue: mockDeparmentService },
       ],
-      controllers: [UsersController, AuthController, DepartmentController],
+      controllers: [UsersController, AuthController, DepartmentsController],
     }).compile();
 
     authController = module.get<AuthController>(AuthController);
     userController = module.get<UsersController>(UsersController);
-    departmentController =
-      module.get<DepartmentController>(DepartmentController); // 👈 add this line
+    departmentsController = module.get<DepartmentsController>(
+      DepartmentsController,
+    );
+    // departmentModel = module.get<Model<Department>>(
+    //   getModelToken('Department'),
+    // ); // Obtener el modelo de Department
+
+    // department ? = await departmentsController.create(mockDepartment);
   });
 
   afterEach(async () => {
     const collection = mongoConnection.collection('users');
+    const departmentsCollection = mongoConnection.collection('departments');
     await collection.deleteMany({});
+    await departmentsCollection.deleteMany({});
   });
 
   describe('createEmployee', () => {
     it('should return an employee', async () => {
-      const result = await authController.signUp(mockUser);
+      const departmentsArray: Types.ObjectId[] = [];
+      if (department._id) {
+        departmentsArray.push(department._id);
+      }
+      const payload = { ...mockUser, departments: departmentsArray };
+      const result = await authController.signUp(payload);
       expect(result).toBeInstanceOf(Object);
       if ('access_token' in result) {
         const { access_token } = result as { access_token: string };
@@ -83,17 +109,15 @@ describe('UsersController', () => {
 
   describe('findAll', () => {
     it('should return an array of employees', async () => {
-      await departmentController.createDepartment(mockDepartment);
-      await authController.signUp(mockUser);
+      const departmentsArray: Types.ObjectId[] = [];
+      if (department._id) {
+        departmentsArray.push(department._id);
+      }
+      const payload = { ...mockUser, departments: departmentsArray };
+      await authController.signUp(payload);
       const result = await userController.findAll();
-      console.log(result);
       expect(result).toBeInstanceOf(Array);
+      expect(result.length).toBeGreaterThan(0);
     });
   });
 });
-
-//TODO: 4. Create a DepartmentController
-//TODO: 5. Create a DepartmentService
-//TODO: 6. Create a DepartmentDto
-//TODO: 7. Create a Department schema - DONE ✅
-//TODO: 8. Create a Department module

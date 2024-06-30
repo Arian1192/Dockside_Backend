@@ -1,25 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Department, DepartmentDocument } from 'src/schemas/department.schema';
+import { Department, DepartmentDocument } from '../schemas/department.schema';
 import { DepartmentsDto } from './departments-dto/departments-dto';
 
 @Injectable()
 export class DepartmentsService {
   constructor(
     @InjectModel(Department.name)
-    private readonly departmentModel: Model<Department>,
+    private readonly departmentModel: Model<DepartmentDocument>,
   ) {}
 
   async create({
     name,
     description,
   }: DepartmentsDto): Promise<DepartmentDocument> {
-    const newDepartment = new this.departmentModel({
-      name,
-      description,
-    });
-    return newDepartment.save();
+    return this.departmentModel.create({ name, description });
   }
 
   async getAll(): Promise<DepartmentDocument[] | []> {
@@ -65,11 +61,8 @@ export class DepartmentsService {
     }
   }
 
-  async deleteOneById(_id: string): Promise<void | null> {
-    const departmentDeleted = await this.departmentModel.findById(_id).exec();
-    if (!departmentDeleted) {
-      return null;
-    }
+  async deleteOneById(_id: string): Promise<null> {
     await this.departmentModel.findByIdAndDelete(_id).exec();
+    return null;
   }
 }

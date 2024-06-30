@@ -5,7 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
-import { JwtModule } from './jwt/jwt.module';
+import { JsonWebTokenModule } from './jwt/jwt.module';
 import { DepartmentsModule } from './departments/departments.module';
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { DepartmentsModule } from './departments/departments.module';
     AuthModule,
     UsersModule,
     DatabaseModule,
-    JwtModule,
+    JsonWebTokenModule,
     DepartmentsModule,
   ],
   controllers: [AppController],
