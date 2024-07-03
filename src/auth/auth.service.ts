@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class AuthService {
@@ -31,6 +32,7 @@ export class AuthService {
     email: string,
     pass: string,
     role?: string,
+    departments?: Types.ObjectId[],
   ): Promise<{ access_token: string }> {
     let payload;
     const user = await this.userService.findOneByEmail(email, true);
@@ -46,6 +48,7 @@ export class AuthService {
         email,
         pass,
         role,
+        departments,
       );
       payload = {
         sub: newUser._id,
