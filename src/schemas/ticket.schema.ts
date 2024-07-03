@@ -4,15 +4,19 @@ import { HydratedDocument, Types } from 'mongoose';
 export type TicketDocument = HydratedDocument<Ticket>;
 
 enum STATUS {
+  PENDING = 'pending',
   OPEN = 'open',
+  ASSIGNED = 'assigned',
   IN_PROGRESS = 'in progress',
   DONE = 'done',
+  ELEVATED = 'elevated',
 }
 
 enum PRIORITY {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
+  CRITICAL = 'critical',
 }
 
 @Schema()
@@ -21,7 +25,7 @@ export class Ticket {
   title: string;
   @Prop({ required: true, maxlength: 250 })
   description: string;
-  @Prop({ type: String, enum: STATUS, default: STATUS.OPEN })
+  @Prop({ type: String, enum: STATUS, default: STATUS.PENDING })
   status: STATUS;
   @Prop({ type: String, enum: PRIORITY, default: PRIORITY.LOW })
   priority: PRIORITY;

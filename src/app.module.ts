@@ -7,6 +7,7 @@ import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { JsonWebTokenModule } from './jwt/jwt.module';
 import { DepartmentsModule } from './departments/departments.module';
+import { TicketsModule } from './tickets/tickets.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -18,6 +19,7 @@ import { DepartmentsModule } from './departments/departments.module';
     DatabaseModule,
     JsonWebTokenModule,
     DepartmentsModule,
+    TicketsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
