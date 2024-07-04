@@ -2,6 +2,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Ticket, TicketDocument } from 'src/schemas/ticket.schema';
+import { TicketDto } from './dto/tickets.dto';
 
 @Injectable()
 export class TicketsService {
@@ -55,11 +56,11 @@ export class TicketsService {
 
   async updateOneById(
     _id: string,
-    ticket: Ticket,
+    _ticket: TicketDto,
   ): Promise<TicketDocument | undefined> {
     try {
       const isTicketUpdated = await this.ticketModel
-        .findByIdAndUpdate(_id, ticket, { new: true })
+        .findByIdAndUpdate(_id, _ticket, { new: true })
         .populate([{ path: 'creatorId', strictPopulate: false }])
         .populate([{ path: 'agentId', strictPopulate: false }])
         .populate([{ path: 'categoryId', strictPopulate: false }])

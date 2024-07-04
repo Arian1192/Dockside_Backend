@@ -6,7 +6,7 @@ import { Department } from 'src/schemas/department.schema';
 
 @Controller('departments')
 export class DepartmentsController {
-  constructor(private readonly departmentsService: DepartmentsService) { }
+  constructor(private readonly departmentsService: DepartmentsService) {}
 
   @Post()
   async create(
