@@ -3,32 +3,44 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Ticket, TicketDocument } from 'src/schemas/ticket.schema';
 import { TicketDto } from './dto/tickets.dto';
-
 @Injectable()
 export class TicketsService {
   constructor(
     @InjectModel(Ticket.name)
     private readonly ticketModel: Model<TicketDocument>,
-  ) {}
+  ) { }
 
   async create(ticket: Ticket): Promise<TicketDocument> {
+    console.log('Entro al service');
+    console.log(ticket);
     return await this.ticketModel.create(ticket);
   }
 
   async getAll(): Promise<TicketDocument[] | []> {
-    return this.ticketModel
-      .find()
-      .populate([{ path: 'creatorId', strictPopulate: false }])
-      .populate([{ path: 'agentId', strictPopulate: false }])
-      .populate([{ path: 'categoryId', strictPopulate: false }])
-      .populate([
-        {
-          path: 'comments',
-          strictPopulate: false,
-          populate: { path: 'userId' },
-        },
-      ])
-      .exec();
+    return (
+      this.ticketModel
+        .find()
+        .populate([
+          {
+            path: 'creatorId',
+            select: '-password',
+            options: { strictPopulate: false },
+          },
+          // { path: 'department' },
+        ])
+        // no popular la contraseña
+        .populate([{ path: 'agentId', strictPopulate: false }])
+        .populate([{ path: 'categoryId', strictPopulate: false }])
+        .populate([{ path: 'department', strictPopulate: false }])
+        .populate([
+          {
+            path: 'comments',
+            strictPopulate: false,
+            populate: { path: 'userId' },
+          },
+        ])
+        .exec()
+    );
   }
 
   async getOneById(_id: string): Promise<TicketDocument | undefined> {

@@ -11,14 +11,22 @@ export class AuthController {
   @HttpCode(200)
   @Post('login')
   signIn(@Body() _signInDto: SignInDto) {
-    return this.authService.signIn(_signInDto.email, _signInDto.password);
+    console.log(_signInDto);
+    if (!_signInDto.email || !_signInDto.password) {
+      return {
+        statusCode: 400,
+        message: 'Bad Request',
+        error: 'email and password are required',
+      };
+    } else {
+      return this.authService.signIn(_signInDto.email, _signInDto.password);
+    }
   }
 
   @HttpCode(201)
   @Post('register')
   @UsePipes(BcryptPipe)
   signUp(@Body() _signUpDto: SignUpDto) {
-    // validate the request body before use the service method.
     if (!_signUpDto.email || !_signUpDto.password || !_signUpDto.name) {
       return {
         statusCode: 400,

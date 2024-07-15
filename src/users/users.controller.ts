@@ -1,13 +1,28 @@
-import { Body, Controller, Get, Param, Patch, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Req,
+  Res,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
 import { User } from 'src/schemas/user.schema';
 import { UsersService } from './users.service';
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 import { UserDto } from './dto/user.dto';
+import { BcryptPipe } from './pipes/bcrypt.pipe';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
+
+
   @Get()
   findAll(): Promise<User[] | []> {
     return this.usersService.getAll();
@@ -38,20 +53,38 @@ export class UsersController {
   }
 
   @Patch('update/:id')
+  @UsePipes(BcryptPipe) // Use the pipe to hash the password
   async updateOneById(
     @Param('id') id: string,
     @Body() user: UserDto,
     @Res() _response: Response,
   ): Promise<User | { message: string } | void | null> {
-    console.log('user', user);
     try {
       const userUpdated = await this.usersService.updateOneById(id, user);
-      console.log('userUpdated', userUpdated);
       if (!userUpdated) {
         _response.status(404).json({ message: 'Not found' });
       } else {
         _response.status(200).json(userUpdated);
         return userUpdated;
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+      _response.status(500).json({ message: 'Internal Server Error' });
+    }
+  }
+
+  @Delete('delete/:id')
+  async deleteOneBydId(
+    @Param('id') id: string,
+    @Res() _response: Response,
+  ): Promise<{ message: string } | void> {
+    try {
+      const userDeleted = await this.usersService.deleteOneById(id);
+      if (!userDeleted) {
+        _response.status(404).json({ message: 'Not found' });
+        return;
+      } else {
+        _response.status(200).json({ message: 'User deleted' });
       }
     } catch (error) {
       _response.status(500).json({ message: 'Internal Server Error' });

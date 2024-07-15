@@ -38,20 +38,29 @@ export class Ticket {
   })
   priority: PRIORITY;
 
+  @Prop({ type: Types.ObjectId, ref: 'Department', required: true })
+  department?: Types.ObjectId;
+
   @Prop()
   closedAt?: Date;
+
+  @Prop({ type: Date, default: Date.now })
+  createdAt: Date;
+
+  @Prop({ type: Date, default: Date.now })
+  updatedAt: Date;
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   creatorId: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
-  agentId: Types.ObjectId | undefined;
+  agentId?: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'Category' })
-  categoryId: Types.ObjectId | undefined;
+  categoryId?: Types.ObjectId;
 
-  @Prop([{ type: Types.ObjectId, ref: 'Comment' }])
-  comments: Types.ObjectId[] | undefined;
+  @Prop([{ type: Types.ObjectId, ref: 'Comment', default: [] }])
+  comments: Types.ObjectId[];
 }
 
 export type TicketDocument = Document & Ticket;

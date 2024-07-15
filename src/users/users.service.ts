@@ -4,7 +4,6 @@ import { Model, Types } from 'mongoose';
 import { User, UserDocument } from '../schemas/user.schema';
 import { UserDto } from './dto/user.dto';
 import { Department } from '../schemas/department.schema';
-import { type } from 'os';
 @Injectable()
 export class UsersService {
   constructor(
@@ -34,7 +33,7 @@ export class UsersService {
     return this.userModel
       .find({ role: { $in: ['manager', 'support', 'user'] } }) // only return users with these roles
       .select('-password')
-      .populate('departments')
+      .populate('department')
       .exec();
   }
 
@@ -51,7 +50,25 @@ export class UsersService {
     const userFound = await this.userModel
       .findOne(query)
       .select('-password')
-      .populate('departments')
+      .populate('department')
+      .exec();
+
+    return userFound;
+  }
+
+  async findOneByEmailWithPassword(
+    email: string,
+    skipFilterRole = false,
+  ): Promise<UserDocument | null> {
+    const query: any = { email };
+
+    if (!skipFilterRole) {
+      query.role = { $nin: ['admin', 'super_admin'] };
+    }
+
+    const userFound = await this.userModel
+      .findOne(query)
+      .populate('department')
       .exec();
 
     return userFound;
@@ -61,7 +78,7 @@ export class UsersService {
     return this.userModel
       .findById(id)
       .select('-password')
-      .populate('departments')
+      .populate('department')
       .exec();
   }
 
@@ -69,8 +86,6 @@ export class UsersService {
     _id: string,
     user: UserDto,
   ): Promise<User | { message: string } | void | null> {
-    console.log('Paso por aqui');
-    console.log(user);
     const isUserFound = await this.userModel.findById(_id).exec();
     if (!isUserFound) {
       return { message: 'Not found' };
@@ -99,9 +114,14 @@ export class UsersService {
       // cuando se ha comprobado que todos los departamentos existen se procede a actualizar el usuario
       const userUpdated = await this.userModel
         .findByIdAndUpdate(_id, user, { new: true })
+        .select('-password')
         .populate('department')
         .exec();
       return userUpdated;
     }
+  }
+
+  async deleteOneById(id: string): Promise<UserDocument | null> {
+    return this.userModel.findByIdAndDelete(id).exec();
   }
 }

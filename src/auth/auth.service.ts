@@ -2,18 +2,28 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { Types } from 'mongoose';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UsersService,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async signIn(email: string, pass: string): Promise<{ access_token: string }> {
-    const user = await this.userService.findOneByEmail(email);
-    if (user?.password !== pass) {
-      throw new UnauthorizedException('Invalid credentials');
+    const user = await this.userService.findOneByEmailWithPassword(email);
+    console.log(user);
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    } else {
+      console.log(pass, user.password);
+      const isPasswordMatch = await bcrypt.compareSync(pass, user.password);
+      console.log(isPasswordMatch);
+      if (!isPasswordMatch) {
+        throw new UnauthorizedException('Password is incorrect');
+      }
     }
     const payload = {
       sub: user._id,
